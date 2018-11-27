@@ -40,24 +40,6 @@ commands:
           name: publish
           command: expo publish --release-channel $EXPO_ENVIRONMENT
 
-  publish-feature: &publish-feature
-    steps:
-      - run: *publish
-      - run:
-          name: post qr code to PR
-          command: |
-            PR_NUMBER=${BASH_REMATCH[1]}
-            EXPO_URL="https://exp.host/@$EXPO_ACCOUNT/$APP_SLUG?release-channel=$CIRCLE_BRANCH"
-            COMMENT_BODY="$EXPO_URL\n\n![QRURL](https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=$EXPO_URL)"
-            POST_BODY="{\"body\": \"$COMMENT_BODY\"}"
-            URL=https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/issues/$PR_NUMBER/comments
-            echo $URL
-            curl -XPOST \
-              -H "Authorization: token $GITHUB_TOKEN" \
-              -H "Content-Type: application/json" \
-              -d "$POST_BODY" \
-              $URL
-
 jobs:
   build:
     <<: *defaults
@@ -89,6 +71,20 @@ jobs:
     steps:
       - checkout
       - publish-feature
+      - run:
+          name: post qr code to PR
+          command: |
+            PR_NUMBER=${BASH_REMATCH[1]}
+            EXPO_URL="https://exp.host/@$EXPO_ACCOUNT/$APP_SLUG?release-channel=$CIRCLE_BRANCH"
+            COMMENT_BODY="$EXPO_URL\n\n![QRURL](https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=$EXPO_URL)"
+            POST_BODY="{\"body\": \"$COMMENT_BODY\"}"
+            URL=https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/issues/$PR_NUMBER/comments
+            echo $URL
+            curl -XPOST \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "$POST_BODY" \
+              $URL
     environment:
       EXPO_ENVIRONMENT: $CIRCLE_BRANCH
 

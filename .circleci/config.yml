@@ -73,7 +73,7 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - release
+      - release:
           environment:
             EXPO_ENVIRONMENT: feature
       - run:

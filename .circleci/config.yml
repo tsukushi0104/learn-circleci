@@ -73,7 +73,10 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - release
+      - run:
+          name: set env
+          command: set EXPO_ENVIRONMENT=$CIRCLE_SHA1
+      - release      
       - run:
           name: post qr code to PR
           command: |
@@ -87,8 +90,6 @@ jobs:
               -H "Content-Type: application/json" \
               -d "$POST_BODY" \
               $URL
-    environment:
-      EXPO_ENVIRONMENT: ${CIRCLE_SHA1}
 
   publish_production:
     <<: *defaults

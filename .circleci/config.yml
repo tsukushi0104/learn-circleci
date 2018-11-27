@@ -8,22 +8,27 @@ defaults: &defaults
     - image: circleci/node:9
 
 setup_tools: &setup_tools
-  - run:
-      name: install expo client
-      command: sudo yarn global add expo-cli
-  - run:
-      name: check the expo version
-      command: expo --version
+  steps:
+    - run:
+        name: install expo client
+        command: sudo yarn global add expo-cli
+    - run:
+        name: check the expo version
+        command: expo --version
 
 setup_config: &setup_config
-  - run:
-      name: rename app.json
-      command: mv ./app.$EXPO_ENVIRONMENT.json ./app.json 
+  steps:
+    - run:
+        name: check work directory
+        command: pwd
+    - run:
+        name: rename app.json
+        command: mv ./app.$EXPO_ENVIRONMENT.json ./app.json 
   
 
 publish: &publish
+  <<: *setup_tools
   steps:
-    <<: *setup_tools
     - run:
         name: install
         command: yarn install
@@ -63,8 +68,7 @@ jobs:
   
   publish-feature:
     <<: *defaults
-    steps:
-      <<: *publish
+    <<: *publish
     steps:
       - run:
           name: post qr code to PR
@@ -85,18 +89,16 @@ jobs:
 
   publish-production:
     <<: *defaults
-    steps:
-      <<: *setup_config
-      <<: *publish      
+    <<: *setup_config
+    <<: *publish
     environment:
       EXPO_ENVIRONMENT: sandbox-prod
 
 
   publish-staging:
     <<: *defaults
-    steps:
-      <<: *setup_config
-      <<: *publish
+    <<: *setup_config
+    <<: *publish
     environment:
       EXPO_ENVIRONMENT: sandbox-stg
 

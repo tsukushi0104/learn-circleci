@@ -37,6 +37,9 @@ commands:
           name: login expo
           command: expo --non-interactive login -u $EXPO_ACCOUNT -p $EXPO_PASSWORD
       - run:
+          name: check env
+          command: echo $EXPO_ENVIRONMENT
+      - run:
           name: publish
           command: expo publish --release-channel $EXPO_ENVIRONMENT
 

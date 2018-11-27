@@ -54,10 +54,10 @@ jobs:
           command: sudo yarn global add expo
       - run:
           name: login expo
-          command: expo login -u $EXPO_ACCOUNT -p $EXPO_PASSWORD --non-interactive
+          command: expo --non-interactive login -u $EXPO_ACCOUNT -p $EXPO_PASSWORD 
       - run:
           name: publish to production
-          command: expo publish --release-channel sandbox-production
+          command: expo --non-interactive publish --release-channel sandbox-production
 
   publish-staging:
     <<: *defaults
@@ -72,10 +72,10 @@ jobs:
           command: sudo yarn global add expo
       - run:
           name: login expo
-          command: expo login -u $EXPO_ACCOUNT -p $EXPO_PASSWORD --non-interactive
+          command: expo --non-interactive login -u $EXPO_ACCOUNT -p $EXPO_PASSWORD
       - run:
           name: publish to production
-          command: expo publish --release-channel sandbox-staging
+          command: expo --non-interactive publish --release-channel sandbox-staging
 
 
 workflows:

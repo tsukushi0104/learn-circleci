@@ -75,7 +75,7 @@ jobs:
       - checkout
       - run:
           name: set env
-          command: EXPO_ENVIRONMENT=$CIRCLE_SHA1
+          command: EXPO_ENVIRONMENT=${CIRCLE_SHA1}
       - release      
       - run:
           name: post qr code to PR

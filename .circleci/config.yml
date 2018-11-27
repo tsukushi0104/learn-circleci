@@ -113,7 +113,7 @@ workflows:
             tags:
               ignore: /.*/
             branches:
-              only: develop
+              only: /^feature/.*/
       - publish-staging:
           requires:
             - build

@@ -39,7 +39,7 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
         
       # run tests!
-      - run: yarn test
+      # - run: yarn test
   
   publish-production:
     <<: *defaults
@@ -58,6 +58,24 @@ jobs:
       - run:
           name: publish to production
           command: expo publish --release-channel sandbox-production
+
+  publish-staging:
+    <<: *defaults
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run: 
+          name: install
+          command: yarn install
+      - run:
+          name: install expo client
+          command: sudo yarn global add expo
+      - run:
+          name: login expo
+          command: expo login -u $EXPO_ACCOUNT -p $EXPO_PASSWORD --non-interactive
+      - run:
+          name: publish to production
+          command: expo publish --release-channel sandbox-staging
 
 
 workflows:

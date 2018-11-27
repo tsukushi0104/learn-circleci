@@ -84,7 +84,7 @@ jobs:
       # run tests!
       # - run: yarn test
   
-  publish-feature:
+  publish_feature:
     <<: *defaults
     steps:
       - checkout
@@ -92,7 +92,7 @@ jobs:
     environment:
       EXPO_ENVIRONMENT: $CIRCLE_BRANCH
 
-  publish-production:
+  publish_production:
     <<: *defaults
     steps:
       - checkout
@@ -102,7 +102,7 @@ jobs:
       EXPO_ENVIRONMENT: sandbox-prod
 
 
-  publish-staging:
+  publish_staging:
     <<: *defaults
     steps:
       - checkout
@@ -120,7 +120,7 @@ workflows:
           filters:
             tags:
               only: /^release-v.*/
-      - publish-feature:
+      - publish_feature:
           requires:
             - build
           filters:
@@ -128,7 +128,7 @@ workflows:
               ignore: /.*/
             branches:
               only: /^feature/.*/
-      - publish-staging:
+      - publish_staging:
           requires:
             - build
           filters:
@@ -136,7 +136,7 @@ workflows:
               ignore: /.*/
             branches:
               only: develop
-      - publish-production:
+      - publish_production:
           requires:
             - build
           filters:

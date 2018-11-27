@@ -88,7 +88,7 @@ jobs:
               -d "$POST_BODY" \
               $URL
     environment:
-      EXPO_ENVIRONMENT: feature-$CIRCLE_SHA1
+      EXPO_ENVIRONMENT: ${CIRCLE_SHA1}
 
   publish_production:
     <<: *defaults

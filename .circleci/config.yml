@@ -3,6 +3,11 @@
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
 version: 2
+defaults: &defaults
+  docker:
+    - image: circleci/node:9
+
+
 jobs:
   build:
     docker:
@@ -35,5 +40,44 @@ jobs:
         
       # run tests!
       - run: yarn test
+  
+  publish-production:
+    <<: *defaults
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run: 
+          name: install
+          command: yarn install
+      - run:
+          name: install expo client
+          command: sudo yarn global add expo
+      - run:
+          name: login expo
+          command: expo login -u $EXPO_ACCOUNT -p $EXPO_PASSWORD --non-interactive
+      - run:
+          name: publish to production
+          command: expo publish --release-channel sandbox-production
 
 
+workflows:
+  version: 2
+  build_deploy:
+    jobs:
+      - build
+      - publish-staging:
+          requires:
+            - build
+          filters:
+            tags:
+              ignore: /.*/
+            branches:
+              only: develop
+      - publish-production:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /^release-v.*/
+            branches:
+              ignore: /.*/

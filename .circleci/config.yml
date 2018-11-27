@@ -27,7 +27,7 @@ commands:
           command: mv ./app.$EXPO_ENVIRONMENT.json ./app.json 
   
 
-  publish: &publish
+  release: &release
     steps:
       - run: *setup_tools
       - run:
@@ -70,7 +70,7 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - publish
+      - release
       - run:
           name: post qr code to PR
           command: |
@@ -92,7 +92,7 @@ jobs:
     steps:
       - checkout
       - setup-config
-      - publish
+      - release
     environment:
       EXPO_ENVIRONMENT: sandbox-prod
 
@@ -102,7 +102,7 @@ jobs:
     steps:
       - checkout
       - setup-config
-      - publish
+      - release
     environment:
       EXPO_ENVIRONMENT: sandbox-stg
 

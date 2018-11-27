@@ -69,9 +69,9 @@ jobs:
   publish_feature:
     <<: *defaults
     steps:
-      - run: 
+      - run:
           name: check env
-          comand: echo $EXPO_ENVIRONMENT
+          command: echo $EXPO_ENVIRONMENT
       - checkout
       - release
       - run:

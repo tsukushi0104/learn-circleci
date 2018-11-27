@@ -74,11 +74,11 @@ jobs:
           name: install expo client
           command: sudo yarn global add expo
       - run:
-        name: check the expo version
-        command: expo --version
+          name: check the expo version
+          command: expo --version
       - run:
-        name: login expo
-        command: expo --non-interactive login -u $EXPO_ACCOUNT -p $EXPO_PASSWORD
+          name: login expo
+          command: expo --non-interactive login -u $EXPO_ACCOUNT -p $EXPO_PASSWORD
       - run:
           name: publish to production
           command: expo --non-interactive publish --release-channel sandbox-staging

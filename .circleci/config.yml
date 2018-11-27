@@ -70,7 +70,6 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - publish-feature
       - run:
           name: post qr code to PR
           command: |

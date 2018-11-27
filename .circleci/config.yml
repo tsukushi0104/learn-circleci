@@ -7,6 +7,35 @@ defaults: &defaults
   docker:
     - image: circleci/node:9
 
+setup_tools: &setup_tools
+  steps:
+    - run:
+        name: install expo client
+        command: sudo yarn global add expo-cli
+    - run:
+        name: check the expo version
+        command: expo --version
+
+setup_config: &setup_config
+  steps:
+    - run:
+        name: rename app.json
+        command: mv ./app.$EXPO_ENVIRONMENT.json ./app.json 
+  
+
+publish: &publish
+  <<: *setup_tools
+  steps:
+    - run:
+        name: install
+        command: yarn install
+    - run:
+        name: login expo
+        command: expo --non-interactive login -u $EXPO_ACCOUNT -p $EXPO_PASSWORD
+    - run:
+        name: publish
+        command: expo publish --release-channel $EXPO_ENVIRONMENT
+
 
 jobs:
   build:
@@ -34,47 +63,41 @@ jobs:
       # run tests!
       # - run: yarn test
   
+  publish-feature:
+    <<: *defaults
+    <<: *publish
+    steps:
+      - run:
+          name: post qr code to PR
+          command: |
+            EXPO_URL="https://exp.host/@$EXPO_ACCOUNT/$APP_SLUG?release-channel=$CIRCLE_BRANCH"
+            COMMENT_BODY="$EXPO_URL\n\n![QRURL](https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=$EXPO_URL)"
+            POST_BODY="{\"body\": \"$COMMENT_BODY\"}"
+            URL=https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/issues/$PR_NUMBER/comments
+            echo 
+            curl -XPOST \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "$POST_BODY" \
+              $URL
+
+    environment:
+      EXPO_ENVIRONMENT: $CIRCLE_BRANCH
+
   publish-production:
     <<: *defaults
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - run: 
-          name: install
-          command: yarn install
-      - run:
-          name: install expo client
-          command: sudo yarn global add expo-cli
-      - run:
-          name: check the expo version
-          command: expo --version
-      - run:
-          name: login expo
-          command: expo --non-interactive login -u $EXPO_ACCOUNT -p $EXPO_PASSWORD 
-      - run:
-          name: publish to production
-          command: expo publish --release-channel sandbox-production
+    <<: *setup_config
+    <<: *publish
+    environment:
+      EXPO_ENVIRONMENT: sandbox-prod
+
 
   publish-staging:
     <<: *defaults
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - run: 
-          name: install
-          command: yarn install
-      - run:
-          name: install expo client
-          command: sudo yarn global add expo-cli
-      - run:
-          name: check the expo version
-          command: expo --version
-      - run:
-          name: login expo
-          command: expo --non-interactive login -u $EXPO_ACCOUNT -p $EXPO_PASSWORD
-      - run:
-          name: publish to production
-          command: expo publish --release-channel sandbox-staging
+    <<: *setup_config
+    <<: *publish
+    environment:
+      EXPO_ENVIRONMENT: sandbox-stg
 
 
 workflows:
@@ -84,7 +107,15 @@ workflows:
       - build:
           filters:
             tags:
-              only: /.*/
+              only: /^release-v.*/
+      - publish-feature:
+          requires:
+            - build
+          filters:
+            tags:
+              ignore: /.*/
+            branches:
+              only: /^feature/.*/
       - publish-staging:
           requires:
             - build

@@ -69,9 +69,6 @@ jobs:
   publish_feature:
     <<: *defaults
     steps:
-      - run:
-          name: check env
-          command: echo $EXPO_ENVIRONMENT
       - checkout
       - release
       - run:
@@ -88,7 +85,7 @@ jobs:
               -d "$POST_BODY" \
               $URL
     environment:
-      EXPO_ENVIRONMENT: echo $CIRCLE_BRANCH | sed s/\//-/g
+      EXPO_ENVIRONMENT: $CIRCLE_SHA1
 
   publish_production:
     <<: *defaults

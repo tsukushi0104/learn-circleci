@@ -97,6 +97,8 @@ workflows:
           filters:
             tags:
               only: /^release-v.*/
+            branches:
+              only: /.*/
       - publish_staging:
           requires:
             - build

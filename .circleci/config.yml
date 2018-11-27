@@ -29,7 +29,7 @@ commands:
 
   release: &release
     steps:
-      - run: *setup_tools
+      - setup_tools
       - run:
           name: install
           command: yarn install

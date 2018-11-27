@@ -17,7 +17,7 @@ commands:
           name: check the expo version
           command: expo --version
 
-  setup_config: &setup_config
+  setup-config: &setup-config
     steps:
       - run:
           name: check work directory
@@ -96,7 +96,7 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - setup_config
+      - setup-config
       - publish
     environment:
       EXPO_ENVIRONMENT: sandbox-prod
@@ -106,7 +106,7 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - setup_config
+      - setup-config
       - publish
     environment:
       EXPO_ENVIRONMENT: sandbox-stg

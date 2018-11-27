@@ -89,14 +89,14 @@ workflows:
   build_deploy:
     jobs:
       - build
-      - publish-staging:
-          requires:
-            - build
-          filters:
-            tags:
-              ignore: /.*/
-            branches:
-              only: develop
+      # - publish-staging:
+      #     requires:
+      #       - build
+      #     filters:
+      #       tags:
+      #         ignore: /.*/
+      #       branches:
+      #         only: develop
       - publish-production:
           requires:
             - build

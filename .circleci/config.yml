@@ -73,11 +73,13 @@ jobs:
             EXPO_URL="https://exp.host/@$EXPO_ACCOUNT/$APP_SLUG?release-channel=$CIRCLE_BRANCH"
             COMMENT_BODY="$EXPO_URL\n\n![QRURL](https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=$EXPO_URL)"
             POST_BODY="{\"body\": \"$COMMENT_BODY\"}"
+            URL=https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/issues/$PR_NUMBER/comments
+            echo 
             curl -XPOST \
               -H "Authorization: token $GITHUB_TOKEN" \
               -H "Content-Type: application/json" \
               -d "$POST_BODY" \
-              https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/issues/$PR_NUMBER/comments
+              $URL
 
     environment:
       EXPO_ENVIRONMENT: $CIRCLE_BRANCH

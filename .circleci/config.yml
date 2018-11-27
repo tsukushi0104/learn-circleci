@@ -108,8 +108,6 @@ workflows:
             branches:
               only: develop
       - publish_production:
-          requires:
-            - build
           filters:
             tags:
               only: /^release-v.*/

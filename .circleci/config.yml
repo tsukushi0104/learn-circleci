@@ -8,24 +8,22 @@ defaults: &defaults
     - image: circleci/node:9
 
 setup_tools: &setup_tools
-  steps:
-    - run:
-        name: install expo client
-        command: sudo yarn global add expo-cli
-    - run:
-        name: check the expo version
-        command: expo --version
+  - run:
+      name: install expo client
+      command: sudo yarn global add expo-cli
+  - run:
+      name: check the expo version
+      command: expo --version
 
 setup_config: &setup_config
-  steps:
-    - run:
-        name: rename app.json
-        command: mv ./app.$EXPO_ENVIRONMENT.json ./app.json 
+  - run:
+      name: rename app.json
+      command: mv ./app.$EXPO_ENVIRONMENT.json ./app.json 
   
 
 publish: &publish
-  <<: *setup_tools
   steps:
+    <<: *setup_tools
     - run:
         name: install
         command: yarn install
@@ -65,7 +63,8 @@ jobs:
   
   publish-feature:
     <<: *defaults
-    <<: *publish
+    steps:
+      <<: *publish
     steps:
       - run:
           name: post qr code to PR
@@ -74,7 +73,7 @@ jobs:
             COMMENT_BODY="$EXPO_URL\n\n![QRURL](https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=$EXPO_URL)"
             POST_BODY="{\"body\": \"$COMMENT_BODY\"}"
             URL=https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/issues/$PR_NUMBER/comments
-            echo 
+            echo $URL
             curl -XPOST \
               -H "Authorization: token $GITHUB_TOKEN" \
               -H "Content-Type: application/json" \
@@ -86,16 +85,18 @@ jobs:
 
   publish-production:
     <<: *defaults
-    <<: *setup_config
-    <<: *publish
+    steps:
+      <<: *setup_config
+      <<: *publish      
     environment:
       EXPO_ENVIRONMENT: sandbox-prod
 
 
   publish-staging:
     <<: *defaults
-    <<: *setup_config
-    <<: *publish
+    steps:
+      <<: *setup_config
+      <<: *publish
     environment:
       EXPO_ENVIRONMENT: sandbox-stg
 

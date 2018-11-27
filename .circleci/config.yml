@@ -69,6 +69,7 @@ jobs:
   publish_feature:
     <<: *defaults
     steps:
+      - run: echo $CIRCLE_BRANCH
       - checkout
       - release
       - run:

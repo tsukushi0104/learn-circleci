@@ -6,44 +6,38 @@ version: 2
 defaults: &defaults
   docker:
     - image: circleci/node:9
-  steps:
-    - checkout
 
 setup_tools: &setup_tools
-  steps:
-    - run:
-        name: install expo client
-        command: sudo yarn global add expo-cli
-    - run:
-        name: check the expo version
-        command: expo --version
+  - run:
+      name: install expo client
+      command: sudo yarn global add expo-cli
+  - run:
+      name: check the expo version
+      command: expo --version
 
 setup_config: &setup_config
-  steps:
-    - run:
-        name: check work directory
-        command: pwd
-    - run:
-        name: rename app.json
-        command: mv ./app.$EXPO_ENVIRONMENT.json ./app.json 
+  - run:
+      name: check work directory
+      command: pwd
+  - run:
+      name: rename app.json
+      command: mv ./app.$EXPO_ENVIRONMENT.json ./app.json 
   
 
 publish: &publish
   <<: *setup_tools
-  steps:
-    - run:
-        name: install
-        command: yarn install
-    - run:
-        name: login expo
-        command: expo --non-interactive login -u $EXPO_ACCOUNT -p $EXPO_PASSWORD
-    - run:
-        name: publish
-        command: expo publish --release-channel $EXPO_ENVIRONMENT
+  - run:
+      name: install
+      command: yarn install
+  - run:
+      name: login expo
+      command: expo --non-interactive login -u $EXPO_ACCOUNT -p $EXPO_PASSWORD
+  - run:
+      name: publish
+      command: expo publish --release-channel $EXPO_ENVIRONMENT
 
 publish-feature: &publish-feature
   <<: *publish
-  steps:
     - run:
         name: post qr code to PR
         command: |
@@ -87,22 +81,28 @@ jobs:
   
   publish-feature:
     <<: *defaults
-    <<: *publish-feature
+    steps:
+      - checkout
+      <<: *publish-feature
     environment:
       EXPO_ENVIRONMENT: $CIRCLE_BRANCH
 
   publish-production:
     <<: *defaults
-    <<: *setup_config
-    <<: *publish
+    steps:
+      - checkout
+      <<: *setup_config
+      <<: *publish
     environment:
       EXPO_ENVIRONMENT: sandbox-prod
 
 
   publish-staging:
     <<: *defaults
-    <<: *setup_config
-    <<: *publish
+    steps:
+      - checkout
+      <<: *setup_config
+      <<: *publish
     environment:
       EXPO_ENVIRONMENT: sandbox-stg
 
